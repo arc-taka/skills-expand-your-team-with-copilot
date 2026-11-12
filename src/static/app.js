@@ -12,8 +12,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const searchInput = document.getElementById("activity-search");
   const searchButton = document.getElementById("search-button");
   const categoryFilters = document.querySelectorAll(".category-filter");
+  const difficultyFilters = document.querySelectorAll(".difficulty-filter");
   const dayFilters = document.querySelectorAll(".day-filter");
   const timeFilters = document.querySelectorAll(".time-filter");
+  const themeToggle = document.getElementById("theme-toggle");
+  const themeIcon = document.getElementById("theme-icon");
+  const themeLabel = document.getElementById("theme-label");
 
   // Authentication elements
   const loginButton = document.getElementById("login-button");
@@ -27,22 +31,48 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Activity categories with corresponding colors
   const activityTypes = {
-    sports: { label: "Sports", color: "#e8f5e9", textColor: "#2e7d32" },
-    arts: { label: "Arts", color: "#f3e5f5", textColor: "#7b1fa2" },
-    academic: { label: "Academic", color: "#e3f2fd", textColor: "#1565c0" },
-    community: { label: "Community", color: "#fff3e0", textColor: "#e65100" },
-    technology: { label: "Technology", color: "#e8eaf6", textColor: "#3949ab" },
+    sports: { label: "Sports" },
+    arts: { label: "Arts" },
+    academic: { label: "Academic" },
+    community: { label: "Community" },
+    technology: { label: "Technology" },
   };
 
   // State for activities and filters
   let allActivities = {};
   let currentFilter = "all";
+  let currentDifficulty = "";
   let searchQuery = "";
   let currentDay = "";
   let currentTimeRange = "";
 
   // Authentication state
   let currentUser = null;
+
+  function setTheme(theme) {
+    const isDark = theme === "dark";
+    document.documentElement.dataset.theme = isDark ? "dark" : "light";
+    themeIcon.textContent = isDark ? "☀️" : "🌙";
+    themeLabel.textContent = isDark ? "Light mode" : "Dark mode";
+    themeToggle.setAttribute(
+      "aria-label",
+      `Switch to ${isDark ? "light" : "dark"} mode`
+    );
+    themeToggle.setAttribute("aria-pressed", String(isDark));
+  }
+
+  const savedTheme = localStorage.getItem("theme");
+  const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+  const initialTheme = savedTheme || systemTheme;
+  setTheme(initialTheme);
+  themeToggle.addEventListener("click", () => {
+    const nextTheme =
+      document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    localStorage.setItem("theme", nextTheme);
+    setTheme(nextTheme);
+  });
 
   // Time range mappings for the dropdown
   const timeRanges = {
@@ -425,6 +455,19 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
+      // The "All" difficulty option represents activities with no assigned level.
+      if (currentDifficulty === "all" && details.difficulty) {
+        return;
+      }
+      if (
+        currentDifficulty &&
+        currentDifficulty !== "all" &&
+        details.difficulty &&
+        details.difficulty.toLowerCase() !== currentDifficulty
+      ) {
+        return;
+      }
+
       // Apply weekend filter if selected
       if (currentTimeRange === "weekend" && details.schedule_details) {
         const activityDays = details.schedule_details.days;
@@ -501,7 +544,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Create activity tag
     const tagHtml = `
-      <span class="activity-tag" style="background-color: ${typeInfo.color}; color: ${typeInfo.textColor}">
+      <span class="activity-tag activity-tag-${activityType}">
         ${typeInfo.label}
       </span>
     `;
@@ -615,6 +658,23 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  difficultyFilters.forEach((button) => {
+    button.addEventListener("click", () => {
+      currentDifficulty =
+        currentDifficulty === button.dataset.difficulty
+          ? ""
+          : button.dataset.difficulty;
+
+      difficultyFilters.forEach((filter) => {
+        const isActive = filter.dataset.difficulty === currentDifficulty;
+        filter.classList.toggle("active", isActive);
+        filter.setAttribute("aria-pressed", String(isActive));
+      });
+
+      displayFilteredActivities();
+    });
+  });
+
   // Add event listeners to day filter buttons
   dayFilters.forEach((button) => {
     button.addEventListener("click", () => {
@@ -694,15 +754,6 @@ document.addEventListener("DOMContentLoaded", () => {
       `;
       document.body.appendChild(confirmDialog);
 
-      // Style the buttons
-      const cancelBtn = confirmDialog.querySelector("#cancel-button");
-      const confirmBtn = confirmDialog.querySelector("#confirm-button");
-
-      cancelBtn.style.backgroundColor = "#f1f1f1";
-      cancelBtn.style.color = "#333";
-
-      confirmBtn.style.backgroundColor = "#dc3545";
-      confirmBtn.style.color = "white";
     }
 
     // Set the message

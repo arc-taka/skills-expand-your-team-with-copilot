@@ -11,6 +11,10 @@
       <h1>Mergington High School</h1>
       <h2>Extracurricular Activities</h2>
       <div id="user-controls">
+        <button id="theme-toggle" class="icon-button" type="button">
+          <span id="theme-icon" aria-hidden="true">🌙</span>
+          <span id="theme-label">Dark mode</span>
+        </button>
         <div id="user-status">
           <button id="login-button" class="icon-button">
             <span class="user-icon">👤</span>
@@ -62,6 +66,42 @@
                 </button>
                 <button class="category-filter" data-category="technology">
                   Technology
+                </button>
+              </div>
+            </div>
+
+            <div class="filter-container difficulty-filter-container">
+              <div class="filter-label">Filter by difficulty:</div>
+              <div class="difficulty-filters" id="difficulty-filters">
+                <button
+                  class="difficulty-filter"
+                  data-difficulty="beginner"
+                  aria-pressed="false"
+                >
+                  Beginner
+                </button>
+                <button
+                  class="difficulty-filter"
+                  data-difficulty="intermediate"
+                  aria-pressed="false"
+                >
+                  Intermediate
+                </button>
+                <button
+                  class="difficulty-filter"
+                  data-difficulty="advanced"
+                  aria-pressed="false"
+                >
+                  Advanced
+                </button>
+                <button
+                  class="difficulty-filter"
+                  data-difficulty="all"
+                  aria-pressed="false"
+                  title="Show activities without a specified difficulty"
+                  aria-label="All (activities without a specified difficulty)"
+                >
+                  All
                 </button>
               </div>
             </div>
