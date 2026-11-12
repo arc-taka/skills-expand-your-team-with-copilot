@@ -99,7 +99,7 @@ initial_activities = {
         "participants": ["amelia@mergington.edu", "harper@mergington.edu"]
     },
     "Manga Maniacs": {
-        "description": "Dive into thrilling adventures, unforgettable characters, and vibrant Japanese manga stories in a club fueled by creativity and fandom.",
+        "description": "Unleash your inner hero and explore epic manga worlds filled with bold adventures, unforgettable characters, and unforgettable plot twists!",
         "schedule": "Tuesdays, 5:00 PM - 6:30 PM",
         "schedule_details": {
             "days": ["Tuesday"],
